@@ -8,8 +8,8 @@ import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
 
 public class Main {
-  public static void main(String[] args)
-          throws IOException, InterruptedException {
+  public static void main(String[] args) throws IOException, InterruptedException {
+
     DefaultTerminalFactory d = new DefaultTerminalFactory();
     Terminal t = d.createTerminal();
     TerminalPosition currentPosition;
@@ -20,46 +20,23 @@ public class Main {
 
     Player player = new Player(1, 10, 10);
 
-    // Reading input
-    t.clearScreen();
+    t.setCursorVisible(false);
 
     boolean continueReadingInput = true;
 
     while (continueReadingInput) {
-      KeyStroke keyStroke = null;
 
-      t.putCharacter(' ');
-      t.setCursorPosition(x, y);
-      t.putCharacter(player);
-      t.flush();
-
-      do {
-        Thread.sleep(5); // might throw InterruptedException
-        keyStroke = t.pollInput();
-      } while (keyStroke == null);
-
-      KeyType type = keyStroke.getKeyType();
-      Character c =
-              keyStroke.getCharacter(); // use Character, not char because it might be null
-
-      switch (type) {
-        case ArrowUp -> y--;
-        case ArrowDown -> y++;
-        case ArrowLeft -> x--;
-        case ArrowRight -> x++;
-      }
+      Character c = player.movePlayer(t);
 
       if (c == Character.valueOf('q')) {
         continueReadingInput = false;
         t.clearScreen();
         String farewell = "Thanks for playing!";
-        x = (terminalCols / 2) - (farewell.length() / 2);
-        y = terminalRows / 2;
+        t.setCursorPosition((terminalCols / 2) - (farewell.length() / 2), terminalRows / 2);
 
-        t.setCursorPosition(x, y);
         t.putString(farewell);
         t.flush();
-        Thread.sleep(2000);
+        Thread.sleep(1000);
       }
     }
     t.close();
